@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ main ]
 
+# Give the workflow permission to write repository contents so the action can push
+# the built site to the `gh-pages` branch using the provided GITHUB_TOKEN.
 permissions:
   contents: write
   pages: write
@@ -18,7 +20,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-
+    # Pass build-time env vars from GitHub Secrets so CRA can embed them into the production bundle
     env:
       REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
       REACT_APP_SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
@@ -27,6 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # persist the GITHUB_TOKEN to allow actions to push commits (default: true)
           persist-credentials: true
 
       - name: Setup Node.js
@@ -34,13 +37,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-      # 🔍 Debug temporário (verifica se as variáveis estão sendo lidas corretamente)
-      - name: Debug env vars
-        run: |
-          echo "CLIENT_ID: $REACT_APP_SPOTIFY_CLIENT_ID"
-          echo "CLIENT_SECRET: $REACT_APP_SPOTIFY_CLIENT_SECRET"
-      # ⚠️ IMPORTANTE: remova este bloco após testar, pois os valores aparecerão nos logs!
 
       - name: Install dependencies
         run: npm ci
