@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ main ]
 
+# Give the workflow permission to write repository contents so the action can push
+# the built site to the `gh-pages` branch using the provided GITHUB_TOKEN.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     name: Build, test and deploy to GitHub Pages
@@ -17,6 +24,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # persist the GITHUB_TOKEN to allow actions to push commits (default: true)
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
