@@ -20,6 +20,10 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
+    # Pass build-time env vars from GitHub Secrets so CRA can embed them into the production bundle
+    env:
+      REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      REACT_APP_SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
     steps:
       - name: Checkout repository
