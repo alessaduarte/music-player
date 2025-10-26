@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import albumPlaceholder from './Assets/AlbumPlaceholder.png';
-import playMusicIcon from './Assets/PlayMusicIcon.svg';
 import searchMusicIcon from './Assets/SearchMusicIcon.svg';
 
 // Read credentials from environment variables (Create React App expects REACT_APP_ prefix)
@@ -9,7 +8,6 @@ const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET || '';
 
 const defaultCover = albumPlaceholder;
-const playIcon = playMusicIcon;
 const searchIcon = searchMusicIcon;
 
 export default function Main() {
