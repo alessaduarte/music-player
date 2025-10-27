@@ -1,13 +1,11 @@
-<div align="center">
-  <h1 align="center">
-    Projeto de Gerenciamento de Personal Trainer
+<h1 align="center">
+    Music Player
     <br />
     <br />
-    <a href="">
-      <img src="">
+    <a href="https://github.com/alessaduarte/music-player/blob/main/src/Assets/ProjectCoverDesign.png">
+      <img src="https://github.com/alessaduarte/music-player/blob/main/src/Assets/ProjectCoverDesign.png">
     </a>
-  </h1>
-</div>
+</h1>
 
 ## Sobre o projeto
 
