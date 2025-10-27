@@ -134,8 +134,8 @@ export default function Main() {
 						name="q"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
-						placeholder="Search for an artist, song or playlist"
-						aria-label="Search for an artist, song or playlist"
+						placeholder="Search for an artist, song or lyrics"
+						aria-label="Search for an artist, song or lyrics"
 					/>
 				</form>
 
