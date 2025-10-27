@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import albumPlaceholder from './Assets/AlbumPlaceholder.png';
 import searchMusicIcon from './Assets/SearchMusicIcon.svg';
@@ -20,9 +20,7 @@ export default function Main() {
 	// Track info to display on the card
 	const [trackTitle, setTrackTitle] = useState('California');
 	const [trackImage, setTrackImage] = useState(defaultCover);
-	const [previewUrl, setPreviewUrl] = useState('');
-	const [isPlaying, setIsPlaying] = useState(false);
-	const audioRef = useRef(null);
+	const [trackUrl, setTrackUrl] = useState('');
 
 	useEffect(() => {
 		// If client credentials are not provided, do nothing (we'll show a helpful message)
@@ -99,19 +97,11 @@ export default function Main() {
 
 			const title = `${item.name} — ${item.artists.map((a) => a.name).join(', ')}`;
 			const image = (item.album && item.album.images && item.album.images[0] && item.album.images[0].url) || defaultCover;
-			const preview = item.preview_url || '';
 
-			// update UI state
 			setTrackTitle(title);
 			setTrackImage(image);
-			setPreviewUrl(preview);
-
-			// stop any currently playing preview when a new track is loaded
-			if (audioRef.current) {
-				audioRef.current.pause();
-				audioRef.current = null;
-				setIsPlaying(false);
-			}
+			// Save Spotify external URL if available so the play button can redirect
+			setTrackUrl((item.external_urls && item.external_urls.spotify) || '');
 		} catch (err) {
 			console.error(err);
 			setError('Failed to search Spotify');
@@ -120,57 +110,16 @@ export default function Main() {
 		}
 	}
 
-	// Play / pause preview URL
-	async function handlePlayPause() {
+	function handlePlayClick() {
 		setError('');
-		if (!previewUrl) {
-			setError('No preview available for this track.');
+		if (!trackUrl) {
+			setError('No Spotify link available for this track.');
 			return;
 		}
-
-		// If there's already an Audio object and it's the same source, toggle
-		if (audioRef.current) {
-			if (isPlaying) {
-				audioRef.current.pause();
-				setIsPlaying(false);
-			} else {
-				try {
-					audioRef.current.play();
-					setIsPlaying(true);
-				} catch (err) {
-					console.error('Play failed', err);
-					setError('Playback failed');
-				}
-			}
-			return;
-		}
-
-		// otherwise create a new Audio object
-		audioRef.current = new Audio(previewUrl);
-		audioRef.current.crossOrigin = 'anonymous';
-		audioRef.current.addEventListener('ended', () => {
-			setIsPlaying(false);
-			// keep audioRef so user can replay; do not null it here
-		});
-
-		try {
-			await audioRef.current.play();
-			setIsPlaying(true);
-		} catch (err) {
-			console.error('Playback error', err);
-			setError('Playback failed');
-		}
+		// Open in a new tab and null opener for safety
+		const newWin = window.open(trackUrl, '_blank');
+		if (newWin) newWin.opener = null;
 	}
-
-	// Cleanup audio on unmount
-	useEffect(() => {
-		return () => {
-			if (audioRef.current) {
-				audioRef.current.pause();
-				audioRef.current = null;
-			}
-		};
-	}, []);
 
 		return (
 			<div className="app-root">
@@ -192,15 +141,7 @@ export default function Main() {
 
 				<div style={{ marginTop: 8 }}>
 					<small style={{ color: '#333' }}>
-						{loading
-							? 'Searching Spotify…'
-							: error
-							? `Error: ${error}`
-							: isPlaying
-							? 'Playing preview…'
-							: !CLIENT_ID || !CLIENT_SECRET
-							? 'Missing CLIENT_ID/CLIENT_SECRET in .env (see README)'
-							: 'Ready to search'}
+						{loading ? 'Searching Spotify…' : error ? `Error: ${error}` : !CLIENT_ID || !CLIENT_SECRET ? 'Missing CLIENT_ID/CLIENT_SECRET in .env (see README)' : 'Ready to search'}
 					</small>
 				</div>
 			</header>
@@ -220,11 +161,11 @@ export default function Main() {
 					</div>
 
 					<button
-						className={`play-button ${isPlaying ? 'playing' : ''}`}
-						aria-label={isPlaying ? 'pause' : 'play'}
-						onClick={handlePlayPause}
-						disabled={!previewUrl}
-						title={previewUrl ? (isPlaying ? 'Pause preview' : 'Play preview') : 'No preview available'}
+						className="play-button"
+						aria-label="play"
+						type="button"
+						onClick={handlePlayClick}
+						aria-disabled={!trackUrl}
 					>
 						<span className="play-triangle" />
 					</button>
