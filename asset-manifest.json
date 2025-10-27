@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "./static/css/main.4754938b.css",
-    "main.js": "./static/js/main.74798c7c.js",
+    "main.js": "./static/js/main.79df82bf.js",
     "static/media/AlbumPlaceholder.png": "./static/media/AlbumPlaceholder.36b27e889cf8c61512b3.png",
     "index.html": "./index.html",
     "static/media/SearchMusicIcon.svg": "./static/media/SearchMusicIcon.f370256d4be2324d0d53ac06f8a242c4.svg",
     "main.4754938b.css.map": "./static/css/main.4754938b.css.map",
-    "main.74798c7c.js.map": "./static/js/main.74798c7c.js.map"
+    "main.79df82bf.js.map": "./static/js/main.79df82bf.js.map"
   },
   "entrypoints": [
     "static/css/main.4754938b.css",
-    "static/js/main.74798c7c.js"
+    "static/js/main.79df82bf.js"
   ]
 }
