@@ -12,11 +12,54 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  security-events: write
 
 jobs:
+  sast: 
+    name: SAST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+  
+      - name: Perform CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  dast: 
+      name: DAST
+      runs-on: ubuntu-latest
+      needs: sast
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+    
+        - name: Setup enviroment
+          run: |
+            npm ci
+            nohup npm start &
+            sleep 10
+    
+        - name: Run OWASP ZAP Baseline Scan
+          uses: zaproxy/action-baseline@v0.10.0
+          with:
+            target: 'http://localhost:3000/api'
+            cmd_options: '-t 60 -m 5 -r zap_report.html'
+
+        - name: Upload DAST Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: zap-report
+            cmd_options: zap_report.html
+          
   build-and-deploy:
     name: Build, test and deploy to GitHub Pages
     runs-on: ubuntu-latest
+    needs: [sast, dast]
     strategy:
       matrix:
         node-version: [18.x]
